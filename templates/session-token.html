@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Session Token</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container text-center mt-5">
+  <button class="btn btn-primary" onclick="openModal('sessionTokenModal')">Generate Session Token</button>
+</div>
+
+<!-- Session Token Modal -->
+<div class="modal" id="sessionTokenModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generate Session Token</h5>
+        <button type="button" class="close" onclick="closeModal('sessionTokenModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="uws_username">UWS Username</label>
+        <input type="text" id="uws_username" class="form-control mb-2" placeholder="UWS Username">
+        <label for="uws_password">UWS Password</label>
+        <input type="password" id="uws_password" class="form-control" placeholder="UWS Password">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitSessionToken()">Get Token</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

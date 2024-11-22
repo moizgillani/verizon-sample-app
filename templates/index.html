@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Access Token</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container text-center mt-5">
+  <button class="btn btn-primary" onclick="openModal('accessTokenModal')">Generate Access Token</button>
+</div>
+
+<!-- Access Token Modal -->
+<div class="modal" id="accessTokenModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generate Access Token</h5>
+        <button type="button" class="close" onclick="closeModal('accessTokenModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="client_id">Client ID</label>
+        <input type="text" id="client_id" class="form-control mb-2" placeholder="Client ID">
+        <label for="client_secret">Client Secret</label>
+        <input type="text" id="client_secret" class="form-control" placeholder="Client Secret">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitAccessToken()">Get Access Token</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

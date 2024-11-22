@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actions</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container text-center mt-5">
+  <button class="btn btn-primary mb-2" onclick="openModal('activateDeviceModal')">Activate Device</button>
+  <button class="btn btn-primary mb-2" onclick="openModal('listServicePlansModal')">List Service Plans</button>
+  <button class="btn btn-primary mb-2" onclick="openModal('listDeviceInfoModal')">List Device Information</button>
+</div>
+
+<!-- Change Device Custom Fields Modal -->
+<div class="modal" id="changeDeviceModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Change Device Custom Fields</h5>
+        <button type="button" class="close" onclick="closeModal('changeDeviceModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" placeholder="Account Name">
+        <input type="text" class="form-control mt-2" placeholder="Device ID">
+        <input type="text" class="form-control mt-2" placeholder="Device Kind">
+        <textarea class="form-control mt-2" placeholder="Custom Fields to Update"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitChangeDevice()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Activate Device Modal -->
+<div class="modal" id="activateDeviceModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Activate Device</h5>
+        <button type="button" class="close" onclick="closeModal('activateDeviceModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="activate_account_name">Account Name</label>
+        <input type="text" class="form-control mb-2" placeholder="Account Name" id="activate_account_name" value="0942080249-00001">
+        <label for="activate_service_plan">Service Plan</label>
+        <input type="text" class="form-control mb-2" placeholder="Service Plan" id="activate_service_plan" value="98681">
+        <label for="activate_MDN_zip">MDN Zip Code</label>
+        <input type="text" class="form-control mb-2" placeholder="MDN Zip Code" id="activate_MDN_zip" value="97035">
+        <label for="activate_SKU_number">SKU Number</label>
+        <input type="text" class="form-control mb-2" placeholder="SKU Number" id="activate_SKU_number" value="VZW080000460098">
+        <label for="activate_device_id">Device ID</label>
+        <input type="text" class="form-control mb-2" placeholder="Device ID" id="activate_device_id" value="89148000008306745823">
+        <label for="activate_device_kind">Device Kind</label>
+        <input type="text" class="form-control mb-2" placeholder="Device Kind" id="activate_device_kind" value="iccid">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitActivateDevice()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- List Service Plans Modal -->
+<div class="modal" id="listServicePlansModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">List Service Plans</h5>
+        <button type="button" class="close" onclick="closeModal('listServicePlansModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" id="service_plan_account_name" placeholder="Account Name">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitListServicePlans()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- List Device Information Modal -->
+<div class="modal" id="listDeviceInfoModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">List Device Information</h5>
+        <button type="button" class="close" onclick="closeModal('listDeviceInfoModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="deviceInfo_device_id">Device ID</label>
+        <input type="text" class="form-control mb-2" id="deviceInfo_device_id" placeholder="Device ID" value="89148000008306745823">
+        <label for="deviceInfo_device_kind">Device Kind</label>
+        <input type="text" class="form-control mb-2" id="deviceInfo_device_kind" placeholder="Device Kind" value="iccid">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitListDeviceInfo()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Result Modal -->
+<div class="modal" id="resultModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="result_title"></h5>
+        <button type="button" class="close" onclick="closeModal('resultModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="flex d-flex" id="result_content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
