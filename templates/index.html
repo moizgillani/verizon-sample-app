@@ -3,14 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generate Access Token</title>
+  <title>Environment Selection</title>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
-
-<div class="container text-center mt-5">
-  <button class="btn btn-primary" onclick="openModal('accessTokenModal')">Generate Access Token</button>
+<div class="container mt-5">
+  <h1 class="text-center">Welcome</h1>
+  <p class="text-center">
+    Please select your environment to proceed.
+    <br>
+    <strong>Sandbox:</strong> For testing purposes with predefined credentials.
+    <br>
+    <strong>Production:</strong> For live operations (no default credentials provided).
+  </p>
+  <div class="text-center">
+    <button class="btn btn-primary" onclick="selectEnvironment('sandbox')">Sandbox</button>
+    <button class="btn btn-secondary" onclick="selectEnvironment('production')">Production</button>
+  </div>
 </div>
 
 <!-- Access Token Modal -->
@@ -22,10 +32,13 @@
         <button type="button" class="close" onclick="closeModal('accessTokenModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <label for="client_id">Client ID</label>
-        <input type="text" id="client_id" class="form-control mb-2" placeholder="Client ID">
-        <label for="client_secret">Client Secret</label>
-        <input type="text" id="client_secret" class="form-control" placeholder="Client Secret">
+        <form id="accessTokenForm">
+          <label for="client_id">Client ID</label>
+          <input type="text" id="client_id" name="client_id" class="form-control mb-2" placeholder="Client ID">
+          <label for="client_secret">Client Secret</label>
+          <input type="text" id="client_secret" name="client_secret" class="form-control mb-2" placeholder="Client Secret">
+          <input type="hidden" id="environment" name="environment">
+        </form>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="submitAccessToken()">Get Access Token</button>
@@ -34,6 +47,58 @@
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+  function selectEnvironment(env) {
+    const form = document.getElementById('accessTokenForm');
+    document.getElementById('environment').value = env;
+
+    if (env === 'sandbox') {
+      // Pre-fill sandbox credentials
+      document.getElementById('client_id').value = 'sandbox_client_id';
+      document.getElementById('client_secret').value = 'sandbox_client_secret';
+    } else if (env === 'production') {
+      // Clear fields for production
+      document.getElementById('client_id').value = '';
+      document.getElementById('client_secret').value = '';
+    }
+
+    // Open modal
+    openModal('accessTokenModal');
+  }
+
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+  }
+
+  function submitAccessToken() {
+    const form = document.getElementById('accessTokenForm');
+    const formData = new FormData(form);
+
+    fetch('/generate-access-token', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('Access token generated successfully!');
+          window.location.href = '/session-token'; // Redirect to session-token page
+        } else {
+          alert('Error: ' + data.message);
+        }
+        closeModal('accessTokenModal');
+      })
+      .catch(error => {
+        alert('An error occurred: ' + error.message);
+        console.error('Error:', error);
+      });
+  }
+</script>
 </body>
 </html>

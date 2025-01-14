@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from verizon.models.account_device_list_request import AccountDeviceListRequest
 from verizon.models.account_device_list_result import AccountDeviceListResult
 from verizon.models.account_details import AccountDetails
@@ -25,37 +25,44 @@ def _oauth_token_provider(last_oauth_token, auth_manager):
     return oauth_token
 
 app = Flask(__name__)
+app.secret_key = 'my_unique_and_secret_key'
+
 client = None
 client_id = None
 client_secret = None
 
-# Route for the first page (Access Token)
-@app.route('/')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        environment = request.form.get('environment')
+        session['environment'] = environment
 
-# Endpoint to handle access token generation
+    environment = session.get('environment', None)
+    return render_template('index.html', environment=environment)
+
 @app.route('/generate-access-token', methods=['POST'])
 def generate_access_token():
     global client, client_id, client_secret
+    environment = session.get('environment', 'PRODUCTION')
     client_id = request.form.get('client_id')
     client_secret = request.form.get('client_secret')
 
-    # Mocking token generation logic (replace with actual API call if needed)
+    if environment == 'SANDBOX':
+        client_id = 'sandbox_client_id'
+        client_secret = 'sandbox_client_secret'
+
     if client_id and client_secret:
         try:
-            # Initialize the Verizon client
             client = VerizonClient(
                 thingspace_oauth_credentials=ThingspaceOauthCredentials(
                     oauth_client_id=client_id,
                     oauth_client_secret=client_secret,
                     oauth_token_provider=_oauth_token_provider
                 ),
-                environment=Environment.PRODUCTION
+                environment=Environment.MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START if environment == 'SANDBOX' else Environment.PRODUCTION
             )
         except APIException as e:
             return jsonify({"status": "error", "message": e}), 401
-        # Simulate token generation success
         return jsonify({"status": "success", "access_token": "mock_access_token"}), 201
     else:
         return jsonify({"status": "error", "message": "Client ID and Client Secret are required"}), 400
@@ -71,8 +78,7 @@ def generate_session_token():
     global client, client_id, client_secret
     username = request.form.get('uws_username')
     password = request.form.get('uws_password')
-
-    # Mocking session token generation logic (replace with actual API call if needed)
+    
     if username and password:
         session_management_controller = client.session_management
         body = LogInRequest(
