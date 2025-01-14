@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Access Token</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Generate Access Token</h1>
+  <form id="accessTokenForm">
+    <label for="client_id">Client ID</label>
+    <input type="text" id="client_id" name="client_id" class="form-control mb-2" placeholder="Client ID">
+    <label for="client_secret">Client Secret</label>
+    <input type="text" id="client_secret" name="client_secret" class="form-control mb-2" placeholder="Client Secret">
+    <button type="button" class="btn btn-primary" onclick="submitAccessToken()">Get Access Token</button>
+  </form>
+</div>
+
+<script>
+  function submitAccessToken() {
+    const form = document.getElementById('accessTokenForm');
+    const formData = new FormData(form);
+
+    fetch('/generate-access-token', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          alert('Access token generated successfully!');
+          window.location.href = '/session-token'; // Redirect to session-token page
+        } else {
+          alert('Error: ' + data.message);
+        }
+      })
+      .catch(error => {
+        alert('An error occurred: ' + error.message);
+        console.error('Error:', error);
+      });
+  }
+</script>
+</body>
+</html>

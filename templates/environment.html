@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verizon Thingspace API Demo</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center">Verizon Thingspace API Demo</h1>
+  <p class="text-center lead">
+    Explore the capabilities of the Verizon Thingspace API SDK with this interactive demo. 
+    This application showcases how to utilize the Verizon Thingspace Python SDK to manage and interact with IoT devices.
+  </p>
+  <hr>
+  <h2 class="text-center">About This Demo</h2>
+  <p>
+    This application is designed to give you a hands-on experience with Verizon Thingspace APIs. 
+    It provides a step-by-step workflow to explore the API's functionality in both <strong>Sandbox</strong> and <strong>Production</strong> environments. 
+    Whether you’re testing your application or running live operations, this demo offers a seamless way to interact with the Thingspace API using Verizon's official Python SDK.
+  </p>
+  <p>
+    <strong>Key Features:</strong>
+    <ul>
+      <li>Supports both <strong>Sandbox</strong> (for testing) and <strong>Production</strong> (for live operations) environments.</li>
+      <li>Allows you to generate access tokens for secure communication with the API.</li>
+      <li>Provides an easy-to-follow flow for calling three key API endpoints:</li>
+      <ul>
+        <li><strong>Start Session:</strong> Initiate a session to manage IoT connectivity.</li>
+        <li><strong>Manage Devices:</strong> Perform operations like querying or updating device configurations.</li>
+        <li><strong>End Session:</strong> Cleanly terminate the session to maintain security and avoid unnecessary charges.</li>
+      </ul>
+    </ul>
+  </p>
+  <hr>
+  <h2 class="text-center">How to Use This Demo</h2>
+  <p>
+    Follow these steps to explore the Verizon Thingspace API:
+    <ol>
+      <li>
+        <strong>Select Your Environment:</strong>
+        Choose <strong>Sandbox</strong> for testing with predefined credentials or <strong>Production</strong> for live operations. 
+        Note that no default credentials are provided for the Production environment.
+      </li>
+      <li>
+        <strong>Generate an Access Token:</strong>
+        Once you select an environment, you'll be guided to generate an access token for secure API communication.
+      </li>
+      <li>
+        <strong>Explore API Endpoints:</strong>
+        After obtaining the access token, use the interactive interface to call three of all the supported endpoints and view the responses in real time.
+      </li>
+    </ol>
+  </p>
+  <p>
+    <strong>Important:</strong> Make sure you have valid credentials for the selected environment. 
+    The <strong>Sandbox</strong> environment uses predefined credentials, while the <strong>Production</strong> environment requires you to provide your own.
+  </p>
+  <hr>
+  <p class="text-center">
+    Ready to begin? Select your environment below and start exploring the Verizon Thingspace API.
+  </p>
+  <form id="environmentForm" action="/select-environment" method="POST" class="text-center">
+    <input type="hidden" id="selectedEnvironment" name="environment">
+    <button type="button" class="btn btn-primary btn-lg" onclick="selectEnvironment('SANDBOX')">Sandbox</button>
+    <button type="button" class="btn btn-secondary btn-lg" onclick="selectEnvironment('PRODUCTION')">Production</button>
+  </form>
+</div>
+<script>
+  function selectEnvironment(env) {
+    document.getElementById('selectedEnvironment').value = env;
+    document.getElementById('environmentForm').submit();
+  }
+</script>
+</body>
+</html>

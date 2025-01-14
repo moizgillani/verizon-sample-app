@@ -30,42 +30,55 @@ app.secret_key = 'my_unique_and_secret_key'
 client = None
 client_id = None
 client_secret = None
+environment = Environment.MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START
 
-@app.route('/index', methods=['GET', 'POST'])
-def index():
+@app.route('/', methods=['GET'])
+def home():
+    return redirect(url_for('select_environment'))
+
+@app.route('/select-environment', methods=['GET', 'POST'])
+def select_environment():
+    global environment
+
     if request.method == 'POST':
-        environment = request.form.get('environment')
-        session['environment'] = environment
+        environment_selected = request.form.get('environment', 'PRODUCTION').upper()
+        session['environment'] = environment_selected
+        environment = (
+            Environment.MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START
+            if environment_selected == 'SANDBOX'
+            else Environment.PRODUCTION
+        )
+        print("Environment Selected", environment)
+        return redirect(url_for('generate_access_token'))
 
-    environment = session.get('environment', None)
-    return render_template('index.html', environment=environment)
+    environment_selected = session.get('environment', 'PRODUCTION').upper()
+    return render_template('environment.html', environment=environment_selected)
 
-@app.route('/generate-access-token', methods=['POST'])
+@app.route('/generate-access-token', methods=['GET', 'POST'])
 def generate_access_token():
-    global client, client_id, client_secret
-    environment = session.get('environment', 'PRODUCTION')
-    client_id = request.form.get('client_id')
-    client_secret = request.form.get('client_secret')
+    global client, client_id, client_secret, environment
 
-    if environment == 'SANDBOX':
-        client_id = 'sandbox_client_id'
-        client_secret = 'sandbox_client_secret'
+    if request.method == 'POST':
+        client_id = request.form.get('client_id')
+        client_secret = request.form.get('client_secret')
 
-    if client_id and client_secret:
-        try:
-            client = VerizonClient(
-                thingspace_oauth_credentials=ThingspaceOauthCredentials(
-                    oauth_client_id=client_id,
-                    oauth_client_secret=client_secret,
-                    oauth_token_provider=_oauth_token_provider
-                ),
-                environment=Environment.MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START if environment == 'SANDBOX' else Environment.PRODUCTION
-            )
-        except APIException as e:
-            return jsonify({"status": "error", "message": e}), 401
-        return jsonify({"status": "success", "access_token": "mock_access_token"}), 201
-    else:
+        if client_id and client_secret:
+            try:
+                client = VerizonClient(
+                    thingspace_oauth_credentials=ThingspaceOauthCredentials(
+                        oauth_client_id=client_id,
+                        oauth_client_secret=client_secret,
+                        oauth_token_provider=_oauth_token_provider
+                    ),
+                    environment=environment
+                )
+                return jsonify({"status": "success", "access_token": "mock_access_token"}), 201
+            except APIException as e:
+                return jsonify({"status": "error", "message": str(e)}), 401
+
         return jsonify({"status": "error", "message": "Client ID and Client Secret are required"}), 400
+
+    return render_template('generate_access_token.html')
 
 # Route for the second page (Session Token)
 @app.route('/session-token')
@@ -75,15 +88,17 @@ def session_token_page():
 # Endpoint to handle session token generation
 @app.route('/generate-session-token', methods=['POST'])
 def generate_session_token():
-    global client, client_id, client_secret
+    global client, client_id, client_secret, environment
     username = request.form.get('uws_username')
     password = request.form.get('uws_password')
+    
+    print("Session Token Environment", environment)
     
     if username and password:
         session_management_controller = client.session_management
         body = LogInRequest(
-            username='apimatic.uws',
-            password='WeL0v3APIs!'
+            username=username,
+            password=password
         )
 
         try:
@@ -92,9 +107,12 @@ def generate_session_token():
             )
 
         except ConnectivityManagementResultException as e: 
-            return jsonify({"status": "error", "message": e}), 400
+            return jsonify({"status": "error", "message": e + "Make sure the entered credentials are correct"}), 400
         except APIException as e: 
             return jsonify({"status": "error", "message": e}), 400
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+        
         # Simulate session token generation success
         vzm2mToken = sessionTokenResponse.body.session_token 
         client = VerizonClient(
@@ -105,7 +123,7 @@ def generate_session_token():
             vz_m2m_token_credentials=VZM2mTokenCredentials(
                 vz_m2m_token=vzm2mToken
             ),
-            environment=Environment.PRODUCTION
+            environment=environment
         )
         return jsonify({"status": "success", "session_token": vzm2mToken}), 201
     else:
@@ -179,12 +197,14 @@ def get_device_info():
 @app.route('/activate-device', methods=['POST'])
 def activate_device():
     global client
+    
     data = {
-        "action": "Acitivate Device",
+        "action": "Activate Device",
     }
     
     if request.form.get('device_id') and request.form.get('device_kind'):
         device_management_controller = client.device_management
+        
         body = CarrierActivateRequest(
             devices=[
                 AccountDeviceList(
